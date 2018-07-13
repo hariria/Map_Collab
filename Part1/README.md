@@ -62,7 +62,7 @@ Examples of queries I want it to handle:
 2. Grab ferraris and lamborghinis that are from the same postal code
 3. Grab all cars that are between $100,000 and $120,000
 
-![text]("https://i.pinimg.com/originals/db/bf/d8/dbbfd872291a8db3d0b227ced14a0f36.png")
+![text](.\nodeDiagram.png)
 
 ### 3. Frontend
 
