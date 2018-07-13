@@ -14,7 +14,6 @@ https://developer.ebay.com/tools/javasdk
 With the API you should be able to do the following:
 - [ ] get all current listings for a given car model from ebay and store them in your db
 - [ ] get all features of a car (ie. mileage, model, year, etc.) from your API Request
-- [ ] Be able to pull certain cars with certain characteristics from you database (filter queries), should be able to handle definite and range queries ie. Grab all cars that are Ferrari, red, and have less than 5000 miles
 
 The BSON structure for each car in the car database should look something like
 
@@ -53,9 +52,26 @@ The BSON structure for each car in the car database should look something like
 }
 ```
 
-
-The API should connect locally to a MongoDB database.
-
+### 2. Node API
 
 
-![alt text]("https://i.pinimg.com/originals/db/bf/d8/dbbfd872291a8db3d0b227ced14a0f36.png")
+The Node API will be linked to the front end where users will be able to pull certain cars with certain characteristics from you database (filter queries), should be able to handle definite and range queries
+
+Examples of queries I want it to handle:
+1. Grab all cars that are Ferrari, red, and have less than 5000 miles
+2. Grab ferraris and lamborghinis that are from the same postal code
+3. Grab all cars that are between $100,000 and $120,000
+
+![text]("https://i.pinimg.com/originals/db/bf/d8/dbbfd872291a8db3d0b227ced14a0f36.png")
+
+### 3. Frontend
+
+For the purpose of this project, I don't care if the frontend is super fancy. Just a static html page that can handle requests will do. The user should be able to request a car based on a few filters:
+
+1. model
+2. make
+3. mileage
+4. year
+5. price (min and max)
+
+If you wanna go the extra mile, you can add a distance filter that will take in an area code and a radius, and calculate all the postal codes within that radius, then retrieve all the cars that have a postal code within that radius
