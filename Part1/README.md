@@ -6,10 +6,10 @@ Create a Node API that can handle front end requests for exotic cars by the user
 ### 1. Ebay API
 You should first create a program in a scripting language (it can be java or python, whatever you prefer) that can communicate with Ebay's API and store car listings locally to a MongoDB database.
 <br><br>
-Python Ebay API: https://github.com/timotheus/ebaysdk-python
+Python Ebay API: <https://github.com/timotheus/ebaysdk-python>
 <br><br>
 Java Ebay API:
-https://developer.ebay.com/tools/javasdk
+<https://developer.ebay.com/tools/javasdk>
 <br><br>
 With the API you should be able to do the following:
 - [ ] get all current listings for a given car model from ebay and store them in your db
