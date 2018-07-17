@@ -1,5 +1,5 @@
 # Python Ebay API:
-Andrew Hariri
+Andrew Hariri <br>
 7/17/2018
 
 ## PRE-INSTALLATION
@@ -16,4 +16,4 @@ $ pip3 install -r requirements.txt
 ```
 and that should download all the necessary packages for you. Otherwise you can install `ebaysdk`, and `pymongo` individually by doing: <br> <br>
 `$ pip3 install ebaysdk`, <br>
-`$ pip3 install pymongo`, <br>
+`$ pip3 install pymongo` <br>
