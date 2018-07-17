@@ -1,0 +1,4 @@
+# NECESSARY PYTHON FILES
+
+pymongo >= 3.7.1
+ebaysdk >= 2.1.5

@@ -71,7 +71,7 @@ Examples of queries I want it to handle:
 2. Grab ferraris and lamborghinis that are from the same postal code
 3. Grab all cars that are between $100,000 and $120,000
 
-![diagram](.\nodeDiagram.png)
+![diagram](https://s3-eu-west-1.amazonaws.com/jssolutions/Article_Photo/Mobile+app+development+with+Express.js/express+js+mobile+development.jpg)
 
 ### 3. Frontend
 
