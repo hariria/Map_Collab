@@ -6,7 +6,10 @@ import sys
 import os
 import os
 import sys
+import json
 from optparse import OptionParser
+import lxml.etree as etree
+from xml.etree import ElementTree as ET
 
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
@@ -38,6 +41,29 @@ def init_options():
     return opts, args
 
 
+
+# ------ DUMP JSON TO FILE ------ #
+def dumpJSON(api, filename="data.json"):
+    if os.path.isfile(filename):
+        os.remove(filename)
+    
+    edited = json.loads(api.response.json())
+    with open('file.json', 'w') as outfile:
+        json.dump(edited, outfile, sort_keys=True, indent=4)
+
+
+
+# ------ DUMP XML TO A FILE ------- #
+def dumpXML(api, filename="data.xml"):
+    tree = ET.XML(api.response_content())
+    print(ET.tostring(tree))
+    print(etree.tostring(x, pretty_print=True, encoding='utf-8'))
+    with open(filename, "wb") as f:
+        f.write(ET.tostring(tree))
+
+
+
+
 def run_motors(opts):
     api = finding(siteid='EBAY-MOTOR', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
                   domain=opts.domain, warnings=True)
@@ -50,11 +76,12 @@ def run_motors(opts):
     except Exception as e:
         print("error % s" % e)
 
-    print("Response code: %s" % api.response_code())
-    print("Response DOM: %s" % api.response_dom())
+    dumpJSON(api)
 
-    dictstr = "%s" % api.response_dict()
-    print("Response dictionary: %s" % dictstr)
+
+
+
+
 
 if __name__ == "__main__":
     print("Finding samples for SDK version %s" % ebaysdk.get_version())
