@@ -1,0 +1,8 @@
+*.bat
+
+#ignore node modules
+#use npm install to download needed modules
+node_modules/
+
+#folder for local database
+database/
