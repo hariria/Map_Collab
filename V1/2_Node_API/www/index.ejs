@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Map</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+  <h1>Hi</h1>
+  <% if (locals.msg) { %>
+    <h3><%= msg %></h3>
+  <% } %>
+  <a href="/create">Create 20 cars in dummy set</a><br><br>
+  <form action="/filter" method="post">
+    <label for="make">Make: </label>
+    <input type="text" name="make"><br><br>
+    <label for="model">Model: </label>
+    <input type="text" name="model"><br><br>
+    <label for="minyear">Earliest Year: </label>
+    <input type="number" name="minyear"><br><br>
+    <label for="maxyear">Latest Year: </label>
+    <input type="number" name="maxyear"><br><br>
+    <label for="minprice">Minimum Price: </label>
+    <input type="number" name="minprice"><br><br>
+    <label for="maxprice">Maximum Price: </label>
+    <input type="number" name="maxprice"><br><br>
+    <input type="submit" value="Submit">
+  </form>
+  <br>
+  <% if (locals.results) { %>
+    <% if(results.length==0) { %>
+      <h3>No Results Found</h3>
+    <% } %>
+    <% results.forEach(function(doc) { %>
+      <h3><%= doc.year %> <%= doc.make %> <%= doc.model %> - $<%= doc.price %></h3>
+      <h4><%= doc.mileage %> miles</h4>
+    <% }); %>
+  <% } %>
+</body>
+</html>
