@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+'''
+Authored by: Andrew Hariri
+'''
 
 from pymongo import MongoClient
 import datetime
@@ -7,6 +10,8 @@ import os
 import os
 import sys
 import json
+import yaml
+import math
 from optparse import OptionParser
 import lxml.etree as etree
 from xml.etree import ElementTree as ET
@@ -14,42 +19,14 @@ from xml.etree import ElementTree as ET
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
 from common import dump
-
 import ebaysdk
+from ebaysdk.utils import getNodeText
 from ebaysdk.finding import Connection as finding
+from ebaysdk.trading import Connection as Trading
+from ebaysdk.shopping import Connection as Shopping
 from ebaysdk.exception import ConnectionError
 
 
-def init_options():
-    usage = "usage: %prog [options]"
-    parser = OptionParser(usage=usage)
-
-    parser.add_option("-d", "--debug",
-                      action="store_true", dest="debug", default=False,
-                      help="Enabled debugging [default: %default]")
-    parser.add_option("-y", "--yaml",
-                      dest="yaml", default='ebay.yaml',
-                      help="Specifies the name of the YAML defaults file. [default: %default]")
-    parser.add_option("-a", "--appid",
-                      dest="appid", default=None,
-                      help="Specifies the eBay application id to use.")
-    parser.add_option("-n", "--domain",
-                      dest="domain", default='svcs.ebay.com',
-                      help="Specifies the eBay domain to use (e.g. svcs.sandbox.ebay.com).")
-
-    (opts, args) = parser.parse_args()
-    return opts, args
-
-
-
-# ------ DUMP JSON TO FILE ------ #
-def dumpJSON(api, filename="data.json"):
-    if os.path.isfile(filename):
-        os.remove(filename)
-    
-    edited = json.loads(api.response.json())
-    with open('file.json', 'w') as outfile:
-        json.dump(edited, outfile, sort_keys=True, indent=4)
 
 
 
@@ -63,27 +40,109 @@ def dumpXML(api, filename="data.xml"):
 
 
 
+# ------ DUMP JSON TO FILE ------ #
+def dumpJSON(api, filename="data.json"):
+    if os.path.isfile(filename):
+        os.remove(filename)
 
-def run_motors(opts):
-    api = finding(siteid='EBAY-MOTOR', debug=opts.debug, appid=opts.appid, config_file=opts.yaml,
-                  domain=opts.domain, warnings=True)
+    edited = json.loads(api.response.json())
+    with open('data.json', 'w') as outfile:
+        json.dump(edited, outfile, sort_keys=True, indent=4)
+
+
+
+# ------- SHOPPING ------- #
+def shoppingAPI():
+    api = Shopping(appid='AndrewHa-carmap-PRD-a69dbd521-35d96473', config_file='ebay.yaml',
+                   warnings=True)
+    shoppingDict = ({
+        'ItemID': ['113164620590', '263841289962'],
+        'IncludeSelector': 'ItemSpecifics,TextDescription,Details'
+    })
+    listItemId = findingAPI()
+    # otherList = ['113164620590', '263841289962']
+    shoppingDict['ItemID'] = listItemId[0:19]
+    print(shoppingDict)
+
 
     try:
-        api.execute('findItemsAdvanced', {
-            'keywords': 'tesla',
-            'categoryId': ['6000', '6001']
-        })
+        api.execute('GetMultipleItems', shoppingDict)
+        dumpJSON(api)
+
+    except ConnectionError as e:
+        print(e)
+        print(e.response.dict())
+
+
+
+def getTotalPages(api, dict=None):
+    dictFinding = ({
+        'categoryId': '6001',
+        'outputSelector': 'CategoryHistogram',
+        'aspectFilter': {
+            'aspectName': 'Make',
+            'aspectValueName': 'Ferrari'
+        },
+        'paginationInput': {
+            'pageNumber': '1',
+            'entriesPerPage': '1'
+        },
+        'paginationOutput': 'totalPages,totalEntries',
+        'sortOrder': 'PricePlusShippingHighest'
+    })
+
+    try:
+        response = json.loads('%s' % api.execute('findItemsAdvanced', dictFinding).json())
+        totalEntries = float(response['paginationOutput']['totalEntries'])
+        totalPages = int(math.ceil(totalEntries / 100))
+        return totalPages
+
+    except Exception as e:
+        print(e)
+    # dumpJSON(api)
+
+
+
+
+# -------- USES EBAY'S FINDING API --------- #
+def findingAPI():
+    api = finding(siteid='EBAY-MOTOR', domain='svcs.ebay.com', warnings=True)
+    dictFinding = ({
+        'categoryId': '6001',
+        'aspectFilter': {
+            'aspectName': 'Make',
+            'aspectValueName': 'Ferrari'
+        },
+        'paginationInput': {
+            'pageNumber': '1',
+            'entriesPerPage': '100'
+        },
+        'paginationOutput': 'totalPages,totalEntries',
+        'sortOrder': 'PricePlusShippingHighest'
+    })
+    try:
+        listItemId = []
+        totalPages = getTotalPages(api)
+        for x in range(1, totalPages + 1):
+            dictFinding['paginationInput']['pageNumber'] = str(x)
+            response = json.loads('%s' % api.execute('findItemsAdvanced', dictFinding).json())
+            for listing in response['searchResult']['item']:
+                listItemId.append(listing['itemId'])
+        print("NUMBER OF LISTINGS: ", len(listItemId))
+        return listItemId
+
     except Exception as e:
         print("error % s" % e)
 
-    dumpJSON(api)
+    # dumpJSON(response)
 
 
 
 
-
-
+# ---- MAIN ---- #
 if __name__ == "__main__":
-    print("Finding samples for SDK version %s" % ebaysdk.get_version())
-    (opts, args) = init_options()
-    run_motors(opts)
+    # findingAPI()
+    # print("CERTID: ", opts.certid, "\nAPPID: ", opts.appid, "\n")
+    shoppingAPI()
+    # # run(opts)
+    # tradingAPI(opts)
