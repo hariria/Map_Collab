@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Map</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+  <% if (locals.msg) { %>
+    <h3><%= msg %></h3>
+  <% } %>
+  <h1>Filtered Results: </h1>
+  <% if (locals.results) { %>
+    <% if(results.length==0) { %>
+      <h3>No Results Found</h3>
+    <% } %>
+    <% results.forEach(function(doc) { %>
+      <h3><%= doc.year %> <%= doc.make %> <%= doc.model %> - $<%= doc.price %></h3>
+      <h4><%= doc.mileage %> miles</h4>
+    <% }); %>
+  <% } %>
+</body>
+</html>

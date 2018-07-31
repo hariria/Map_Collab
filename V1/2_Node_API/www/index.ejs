@@ -11,29 +11,24 @@
   <% } %>
   <a href="/create">Create 20 cars in dummy set</a><br><br>
   <form action="/filter" method="post">
-    <label for="make">Make: </label>
-    <input type="text" name="make"><br><br>
-    <label for="model">Model: </label>
-    <input type="text" name="model"><br><br>
-    <label for="minyear">Earliest Year: </label>
-    <input type="number" name="minyear"><br><br>
-    <label for="maxyear">Latest Year: </label>
-    <input type="number" name="maxyear"><br><br>
-    <label for="minprice">Minimum Price: </label>
-    <input type="number" name="minprice"><br><br>
-    <label for="maxprice">Maximum Price: </label>
-    <input type="number" name="maxprice"><br><br>
+    <label class="filterLabel" for="make">Make: </label>
+    <input type="text" id="make" name="make"><br><br>
+    <label class="filterLabel" for="model">Model: </label>
+    <input type="text" id="model" name="model"><br><br>
+    <label class="filterLabel" for="minyear">Earliest Year: </label>
+    <input type="number" id="minyear" name="minyear"><br><br>
+    <label class="filterLabel" for="maxyear">Latest Year: </label>
+    <input type="number" id="maxyear" name="maxyear"><br><br>
+    <label class="filterLabel" for="minprice">Minimum Price: </label>
+    <input type="number" id="minprice" name="minprice"><br><br>
+    <label class="filterLabel" for="maxprice">Maximum Price: </label>
+    <input type="number" id="maxprice" name="maxprice"><br><br>
+    <label>Sort by: </label><br>
+    <input type="radio" name="sort" id="sortMake" value="make" checked><label class="sortLabel" for="sortMake"> Make/Model</label><br>
+    <input type="radio" name="sort" id="sortLow" value="low"><label class="sortLabel" for="sortLow"> Lowest Price</label><br>
+    <input type="radio" name="sort" id="sortHigh" value="high"><label class="sortLabel" for="sortHigh"> Highest Price</label><br>
+    <br>
     <input type="submit" value="Submit">
   </form>
-  <br>
-  <% if (locals.results) { %>
-    <% if(results.length==0) { %>
-      <h3>No Results Found</h3>
-    <% } %>
-    <% results.forEach(function(doc) { %>
-      <h3><%= doc.year %> <%= doc.make %> <%= doc.model %> - $<%= doc.price %></h3>
-      <h4><%= doc.mileage %> miles</h4>
-    <% }); %>
-  <% } %>
 </body>
 </html>
