@@ -1,0 +1,43 @@
+Filter By:
+
+"ConditionDisplayName"
+"Exterior Color"
+"Interior Color"
+"PostalCode"
+"Make"
+"Mileage"
+"Model"
+"Year"
+"value"
+
+
+
+
+
+
+Display:
+
+"Description"
+"EbaySellerUserID"
+"Exterior Color"
+"For Sale By"
+"Interior Color"
+"Location"
+"Make"
+"Manufacturer Exterior Color"
+"Manufacturer Interior Color"
+"Mileage"
+"Model"
+"PictureURL": []
+"PostalCode"
+"StartTime"
+"StoreName"
+"StoreURL"
+"Title"
+"VIN"
+"Vehicle Title"
+"ViewItemURLForNaturalSearch"
+"Warranty"
+"Year"
+"_currencyID"
+"value"
