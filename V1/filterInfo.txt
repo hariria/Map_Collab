@@ -28,7 +28,7 @@ Display:
 "ManufacturerInteriorColor"
 "Mileage"
 "Model"
-"PictureURL": []
+"PictureURL"
 "PostalCode"
 "StartTime"
 "StoreName"
@@ -43,7 +43,7 @@ Display:
 "value"
 "FuelType"
 "Options"
-"PowerOptions" -- if there are any
+"PowerOptions"
 "Engine"
 "BodyType"
 "Transmission"
@@ -54,4 +54,5 @@ Display:
 
 Notes:
 
+"PictureURL" is a [list]
 "Options" and "PowerOptions" usually they have a value of "--", if they EXIST and don't have a value of "--", display them
