@@ -8,7 +8,6 @@ import datetime
 import pprint
 import sys
 import os
-import os
 import sys
 import json
 import yaml
@@ -20,20 +19,17 @@ from xml.etree import ElementTree as ET
 sys.path.insert(0, '%s/../' % os.path.dirname(__file__))
 
 from common import dump
-import ebaysdk
 from ebaysdk.utils import getNodeText
 from ebaysdk.finding import Connection as finding
-from ebaysdk.trading import Connection as Trading
 from ebaysdk.shopping import Connection as Shopping
 from ebaysdk.exception import ConnectionError
+from halo import Halo
 
 
 
 # ------ DUMP XML TO A FILE ------- #
 def dumpXML(api, filename="data.xml"):
     tree = ET.XML(api.response_content())
-    print(ET.tostring(tree))
-    print(etree.tostring(x, pretty_print=True, encoding='utf-8'))
     with open(filename, "wb") as f:
         f.write(ET.tostring(tree))
 
@@ -48,8 +44,8 @@ def dumpObjJSON(obj, filename="data.json"):
 
 
 
-# ------ DUMP JSON TO FILE ------ #
-def dumpJSON(api, filename="data.json"):
+# ------ DUMP API TO JSON FILE ------ #
+def dumpApiJSON(api, filename="data.json"):
     if os.path.isfile(filename):
         os.remove(filename)
 
@@ -60,12 +56,12 @@ def dumpJSON(api, filename="data.json"):
 
 
 # ------ TOTAL NUMBER OF PAGES ------- #
-def getTotalPages(api, dict=None):
+def getTotalPages(api, make, dict=None):
     dictFinding = ({
         'categoryId': '6001',
         'aspectFilter': {
             'aspectName': 'Make',
-            'aspectValueName': 'Ferrari'
+            'aspectValueName': make
         },
         'paginationInput': {
             'pageNumber': '1',
@@ -89,13 +85,13 @@ def getTotalPages(api, dict=None):
 
 
 # -------- USES EBAY'S FINDING API --------- #
-def findingAPI():
+def ebayItemIdList(make, listLength=None):
     api = finding(siteid='EBAY-MOTOR', domain='svcs.ebay.com', warnings=True)
     dictFinding = ({
         'categoryId': '6001',
         'aspectFilter': {
             'aspectName': 'Make',
-            'aspectValueName': 'Ferrari'
+            'aspectValueName': make
         },
         'paginationInput': {
             'pageNumber': '1',
@@ -106,13 +102,16 @@ def findingAPI():
     })
     try:
         listItemId = []
-        totalPages = getTotalPages(api)
+        totalPages = getTotalPages(api, make)
         for x in range(1, totalPages + 1):
             dictFinding['paginationInput']['pageNumber'] = str(x)
             response = json.loads('%s' % api.execute('findItemsAdvanced', dictFinding).json())
             for listing in response['searchResult']['item']:
                 listItemId.append(listing['itemId'])
-        print("NUMBER OF LISTINGS: ", len(listItemId))
+        print("TOTAL NUMBER OF LISTINGS FOR %s: " % make, len(listItemId))
+        if listLength != None:
+            print("Returning %s number of items" % listLength)
+            return listItemId[0:listLength]
         return listItemId
 
     except Exception as e:
@@ -122,18 +121,15 @@ def findingAPI():
 
 
 # ------- SHOPPING ------- #
-def shoppingAPI():
+def shoppingAPI(make, JSON=True):
     centralList = []
     api = Shopping(appid='AndrewHa-carmap-PRD-a69dbd521-35d96473', config_file='ebay.yaml',
                    warnings=True)
+    listItemId = ebayItemIdList(make)
     shoppingDict = ({
-        'ItemID': ['113164620590'],
+        'ItemID': listItemId,
         'IncludeSelector': 'ItemSpecifics,TextDescription,Details'
     })
-    listItemId = findingAPI()
-
-    # ---- CUTTING IT OFF TO JUST 20 LISTINGS FOR NOW
-    # listItemId = listItemId[0:20]
 
     for x in range(0, len(listItemId), 20):
         if (x < len(listItemId)):
@@ -143,8 +139,6 @@ def shoppingAPI():
             shoppingDict['ItemID'] = listItemId[x: x + maxRange]
         try:
             apiDict = json.loads('%s' % api.execute('GetMultipleItems', shoppingDict).json())
-            pp = pprint.PrettyPrinter(indent=4)
-            pp.pprint(apiDict)
             for item in apiDict['Item']:
                 revisedDict = {}
                 revisedDict['ConditionDisplayName'] = item['ConditionDisplayName']
@@ -215,7 +209,8 @@ def shoppingAPI():
             print("CURRENT DICTIONARY:\n", pp.pprint(apiDict))
             print(e)
             print('\n\n\n')
-    dumpObjJSON(centralList)
+    if JSON == True:
+        dumpObjJSON(centralList)
 
 
 
@@ -224,4 +219,4 @@ def shoppingAPI():
 # ---- MAIN ---- #
 if __name__ == "__main__":
 
-    shoppingAPI()
+    shoppingAPI('Ferrari')
