@@ -5,6 +5,7 @@ Authored by: Andrew Hariri
 
 from pymongo import MongoClient
 import datetime
+import pprint
 import sys
 import os
 import os
@@ -159,26 +160,36 @@ def shoppingAPI():
                 revisedDict['Warranty'] = item['ItemSpecifics']['NameValueList'][6]['Value']
                 revisedDict['Vehicle Title'] = item['ItemSpecifics']['NameValueList'][7]['Value']
                 revisedDict['For Sale By'] = item['ItemSpecifics']['NameValueList'][8]['Value']
-                revisedDict['Manufacturer Exterior Color'] = item['ItemSpecifics']['NameValueList'][9]['Value']
-                revisedDict['Manufacturer Interior Color'] = item['ItemSpecifics']['NameValueList'][10]['Value']
-                revisedDict['Title'] = item['ItemSpecifics']['NameValueList'][11]['Value']
-                revisedDict['VIN'] = item['ItemSpecifics']['NameValueList'][13]['Value']
-                revisedDict['Location'] = item['Location']
-                revisedDict['PictureURL'] = item['PictureURL']
-                revisedDict['PostalCode'] = item['PostalCode']
+                if len(item['ItemSpecifics']['NameValueList']) > 9:
+                    revisedDict['Manufacturer Exterior Color'] = item['ItemSpecifics']['NameValueList'][9]['Value']
+                if len(item['ItemSpecifics']['NameValueList']) > 10:
+                    revisedDict['Manufacturer Interior Color'] = item['ItemSpecifics']['NameValueList'][10]['Value']
+                if len(item['ItemSpecifics']['NameValueList']) > 11:
+                    revisedDict['Title'] = item['ItemSpecifics']['NameValueList'][11]['Value']
+                if len(item['ItemSpecifics']['NameValueList']) > 13:
+                    revisedDict['VIN'] = item['ItemSpecifics']['NameValueList'][13]['Value']
+                if 'Location' in item:
+                    revisedDict['Location'] = item['Location']
+                if 'PictureURL' in item:
+                    revisedDict['PictureURL'] = item['PictureURL']
+                if 'PostalCode' in item:
+                    revisedDict['PostalCode'] = item['PostalCode']
                 revisedDict['EbayPrimaryCategoryID'] = item['PrimaryCategoryID']
                 revisedDict['EbayPrimaryCategoryIDPath'] = item['PrimaryCategoryIDPath']
                 revisedDict['EbayPrimaryCategoryName'] = item['PrimaryCategoryName']
                 revisedDict['EbaySellerUserID'] = item['Seller']['UserID']
                 revisedDict['StartTime'] = item['StartTime']
-                print(item['Storefront'])
-                revisedDict['StoreName'] = item['Storefront']['StoreName']
-                revisedDict['StoreURL'] = item['Storefront']['StoreURL']
+                if 'Storefront' in item:
+                    revisedDict['StoreName'] = item['Storefront']['StoreName']
+                    revisedDict['StoreURL'] = item['Storefront']['StoreURL']
                 revisedDict['Title'] = item['Title']
                 revisedDict['ViewItemURLForNaturalSearch'] = item['ViewItemURLForNaturalSearch']
                 centralList.append(revisedDict)
         except Exception as e:
+            print("LIST INDEX: [", x, ",", x+20, "]")
+            print("CURRENT DICTIONARY:\n", pprint(apiDict))
             print(e)
+            print('\n\n\n')
     dumpObjJSON(centralList)
 
 
