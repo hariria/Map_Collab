@@ -19,13 +19,13 @@ Display:
 
 "Description"
 "EbaySellerUserID"
-"Exterior Color"
-"For Sale By"
-"Interior Color"
+"ExteriorColor"
+"ForSaleBy"
+"InteriorColor"
 "Location"
 "Make"
-"Manufacturer Exterior Color"
-"Manufacturer Interior Color"
+"ManufacturerExteriorColor"
+"ManufacturerInteriorColor"
 "Mileage"
 "Model"
 "PictureURL": []
@@ -35,9 +35,23 @@ Display:
 "StoreURL"
 "Title"
 "VIN"
-"Vehicle Title"
+"VehicleTitle"
 "ViewItemURLForNaturalSearch"
 "Warranty"
 "Year"
 "_currencyID"
 "value"
+"FuelType"
+"Options"
+"PowerOptions" -- if there are any
+"Engine"
+"BodyType"
+"Transmission"
+
+
+
+
+
+Notes:
+
+"Options" and "PowerOptions" usually they have a value of "--", if they EXIST and don't have a value of "--", display them

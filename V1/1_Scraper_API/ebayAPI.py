@@ -28,9 +28,6 @@ from ebaysdk.shopping import Connection as Shopping
 from ebaysdk.exception import ConnectionError
 
 
-centralDictionary = {}
-
-
 
 # ------ DUMP XML TO A FILE ------- #
 def dumpXML(api, filename="data.xml"):
@@ -135,6 +132,9 @@ def shoppingAPI():
     })
     listItemId = findingAPI()
 
+    # ---- CUTTING IT OFF TO JUST 20 LISTINGS FOR NOW
+    # listItemId = listItemId[0:20]
+
     for x in range(0, len(listItemId), 20):
         if (x < len(listItemId)):
             shoppingDict['ItemID'] = listItemId[x: x + 20]
@@ -143,31 +143,55 @@ def shoppingAPI():
             shoppingDict['ItemID'] = listItemId[x: x + maxRange]
         try:
             apiDict = json.loads('%s' % api.execute('GetMultipleItems', shoppingDict).json())
+            pp = pprint.PrettyPrinter(indent=4)
+            pp.pprint(apiDict)
             for item in apiDict['Item']:
                 revisedDict = {}
                 revisedDict['ConditionDisplayName'] = item['ConditionDisplayName']
                 revisedDict['ConditionID'] = item['ConditionID']
                 revisedDict['_currencyID'] = item['CurrentPrice']['_currencyID']
-                revisedDict['value'] = item['CurrentPrice']['value']
+                revisedDict['value'] = item['ConvertedCurrentPrice']['value']
                 revisedDict['Description'] = item['Description']
                 revisedDict['EbayItemID'] = item['ItemID']
-                revisedDict['Year'] = item['ItemSpecifics']['NameValueList'][0]['Value']
-                revisedDict['Make'] = item['ItemSpecifics']['NameValueList'][1]['Value']
-                revisedDict['Model'] = item['ItemSpecifics']['NameValueList'][2]['Value']
-                revisedDict['Mileage'] = item['ItemSpecifics']['NameValueList'][3]['Value']
-                revisedDict['Exterior Color'] = item['ItemSpecifics']['NameValueList'][4]['Value']
-                revisedDict['Interior Color'] = item['ItemSpecifics']['NameValueList'][5]['Value']
-                revisedDict['Warranty'] = item['ItemSpecifics']['NameValueList'][6]['Value']
-                revisedDict['Vehicle Title'] = item['ItemSpecifics']['NameValueList'][7]['Value']
-                revisedDict['For Sale By'] = item['ItemSpecifics']['NameValueList'][8]['Value']
-                if len(item['ItemSpecifics']['NameValueList']) > 9:
-                    revisedDict['Manufacturer Exterior Color'] = item['ItemSpecifics']['NameValueList'][9]['Value']
-                if len(item['ItemSpecifics']['NameValueList']) > 10:
-                    revisedDict['Manufacturer Interior Color'] = item['ItemSpecifics']['NameValueList'][10]['Value']
-                if len(item['ItemSpecifics']['NameValueList']) > 11:
-                    revisedDict['Title'] = item['ItemSpecifics']['NameValueList'][11]['Value']
-                if len(item['ItemSpecifics']['NameValueList']) > 13:
-                    revisedDict['VIN'] = item['ItemSpecifics']['NameValueList'][13]['Value']
+                for attribute in item['ItemSpecifics']['NameValueList']:
+                    if attribute['Name'] == 'Year':
+                        revisedDict['Year'] = attribute['Value']
+                    elif attribute['Name'] == 'Make':
+                        revisedDict['Make'] = attribute['Value']
+                    elif attribute['Name'] == 'Model':
+                        revisedDict['Model'] = attribute['Value']
+                    elif attribute['Name'] == 'Mileage':
+                        revisedDict['Mileage'] = attribute['Value']
+                    elif attribute['Name'] == 'Exterior Color':
+                        revisedDict['ExteriorColor'] = attribute['Value']
+                    elif attribute['Name'] == 'Interior Color':
+                        revisedDict['InteriorColor'] = attribute['Value']
+                    elif attribute['Name'] == 'Warranty':
+                        revisedDict['Warranty'] = attribute['Value']
+                    elif attribute['Name'] == 'Vehicle Title':
+                        revisedDict['VehicleTitle'] = attribute['Value']
+                    elif attribute['Name'] == 'For Sale By':
+                        revisedDict['ForSaleBy'] = attribute['Value']
+                    elif attribute['Name'] == 'Manufacturer Exterior Color':
+                        revisedDict['ManufacturerExteriorColor'] = attribute['Value']
+                    elif attribute['Name'] == 'Manufacturer Interior Color':
+                        revisedDict['ManufacturerInteriorColor'] = attribute['Value']
+                    elif attribute['Name'] == 'Title':
+                        revisedDict['Title'] = attribute['Value']
+                    elif attribute['Name'] == 'VIN':
+                        revisedDict['VIN'] = attribute['Value']
+                    elif attribute['Name'] == 'Fuel Type':
+                        revisedDict['FuelType'] = attribute['Value']
+                    elif attribute['Name'] == 'Options':
+                        revisedDict['Options'] = attribute['Value']
+                    elif attribute['Name'] == 'Power Options':
+                        revisedDict['PowerOptions'] = attribute['Value']
+                    elif attribute['Name'] == 'Engine':
+                        revisedDict['Engine'] = attribute['Value']
+                    elif attribute['Name'] == 'Body Type':
+                        revisedDict['BodyType'] = attribute['Value']
+                    elif attribute['Name'] == 'Transmission':
+                        revisedDict['Transmission'] = attribute['Value']
                 if 'Location' in item:
                     revisedDict['Location'] = item['Location']
                 if 'PictureURL' in item:
@@ -186,8 +210,9 @@ def shoppingAPI():
                 revisedDict['ViewItemURLForNaturalSearch'] = item['ViewItemURLForNaturalSearch']
                 centralList.append(revisedDict)
         except Exception as e:
+            pp = pprint.PrettyPrinter(indent=4)
             print("LIST INDEX: [", x, ",", x+20, "]")
-            print("CURRENT DICTIONARY:\n", pprint(apiDict))
+            print("CURRENT DICTIONARY:\n", pp.pprint(apiDict))
             print(e)
             print('\n\n\n')
     dumpObjJSON(centralList)
