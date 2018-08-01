@@ -30,6 +30,7 @@ from ebaysdk.exception import ConnectionError
 centralDictionary = {}
 
 
+
 # ------ DUMP XML TO A FILE ------- #
 def dumpXML(api, filename="data.xml"):
     tree = ET.XML(api.response_content())
@@ -39,13 +40,13 @@ def dumpXML(api, filename="data.xml"):
         f.write(ET.tostring(tree))
 
 
-# ------ DUMP DICTIONARY TO JSON FILE ------ #
-def dumpDictJSON(dict, filename="data.json"):
+# ------ TYPICALLY DUMP DICTIONARY / LIST TO JSON FILE ------ #
+def dumpObjJSON(obj, filename="data.json"):
     if os.path.isfile(filename):
         os.remove(filename)
 
     with open(filename, 'w') as outfile:
-        json.dump(dict, outfile, sort_keys=True, indent=4)
+        json.dump(obj, outfile, sort_keys=True, indent=4)
 
 
 
@@ -57,20 +58,6 @@ def dumpJSON(api, filename="data.json"):
     edited = json.loads(api.response.json())
     with open('data.json', 'w') as outfile:
         json.dump(edited, outfile, sort_keys=True, indent=4)
-
-
-# ------ APPEND Central DICTIONARY ------ #
-def appendCentral(api, filename="data.json"):
-    if os.path.isfile(filename):
-        with open(filename,'r+') as f:
-            dict = json.load(f)
-            edited = json.loads(api.response.json())
-            dict.update(edited)
-            json.dump(dict, f)
-    else:
-        edited = json.loads(api.response.json())
-        with open(filename, 'w') as outfile:
-            json.dump(edited, outfile, sort_keys=True, indent=4)
 
 
 
@@ -98,7 +85,7 @@ def getTotalPages(api, dict=None):
 
     except Exception as e:
         print(e)
-    # dumpJSON(api)
+
 
 
 
@@ -138,6 +125,7 @@ def findingAPI():
 
 # ------- SHOPPING ------- #
 def shoppingAPI():
+    centralList = []
     api = Shopping(appid='AndrewHa-carmap-PRD-a69dbd521-35d96473', config_file='ebay.yaml',
                    warnings=True)
     shoppingDict = ({
@@ -145,6 +133,7 @@ def shoppingAPI():
         'IncludeSelector': 'ItemSpecifics,TextDescription,Details'
     })
     listItemId = findingAPI()
+
     for x in range(0, len(listItemId), 20):
         if (x < len(listItemId)):
             shoppingDict['ItemID'] = listItemId[x: x + 20]
@@ -152,19 +141,45 @@ def shoppingAPI():
             maxRange = len(listItemId) - x
             shoppingDict['ItemID'] = listItemId[x: x + maxRange]
         try:
-            # IF DICTIONARY IS EMPTY
-            if not centralDictionary:
-                centralDictionary = json.loads('%s' % api.execute('GetMultipleItems', shoppingDict).json())
-            # IF DICTIONARY NOT EMPTY
-            else:
-                response = json.loads('%s' % api.execute('GetMultipleItems', shoppingDict).json())
-                tempList = response['Item']
-                centralDictionary['Item'].append(tempList)
-            appendJSON(api)
-        except ConnectionError as e:
+            apiDict = json.loads('%s' % api.execute('GetMultipleItems', shoppingDict).json())
+            for item in apiDict['Item']:
+                revisedDict = {}
+                revisedDict['ConditionDisplayName'] = item['ConditionDisplayName']
+                revisedDict['ConditionID'] = item['ConditionID']
+                revisedDict['_currencyID'] = item['CurrentPrice']['_currencyID']
+                revisedDict['value'] = item['CurrentPrice']['value']
+                revisedDict['Description'] = item['Description']
+                revisedDict['EbayItemID'] = item['ItemID']
+                revisedDict['Year'] = item['ItemSpecifics']['NameValueList'][0]['Value']
+                revisedDict['Make'] = item['ItemSpecifics']['NameValueList'][1]['Value']
+                revisedDict['Model'] = item['ItemSpecifics']['NameValueList'][2]['Value']
+                revisedDict['Mileage'] = item['ItemSpecifics']['NameValueList'][3]['Value']
+                revisedDict['Exterior Color'] = item['ItemSpecifics']['NameValueList'][4]['Value']
+                revisedDict['Interior Color'] = item['ItemSpecifics']['NameValueList'][5]['Value']
+                revisedDict['Warranty'] = item['ItemSpecifics']['NameValueList'][6]['Value']
+                revisedDict['Vehicle Title'] = item['ItemSpecifics']['NameValueList'][7]['Value']
+                revisedDict['For Sale By'] = item['ItemSpecifics']['NameValueList'][8]['Value']
+                revisedDict['Manufacturer Exterior Color'] = item['ItemSpecifics']['NameValueList'][9]['Value']
+                revisedDict['Manufacturer Interior Color'] = item['ItemSpecifics']['NameValueList'][10]['Value']
+                revisedDict['Title'] = item['ItemSpecifics']['NameValueList'][11]['Value']
+                revisedDict['VIN'] = item['ItemSpecifics']['NameValueList'][13]['Value']
+                revisedDict['Location'] = item['Location']
+                revisedDict['PictureURL'] = item['PictureURL']
+                revisedDict['PostalCode'] = item['PostalCode']
+                revisedDict['EbayPrimaryCategoryID'] = item['PrimaryCategoryID']
+                revisedDict['EbayPrimaryCategoryIDPath'] = item['PrimaryCategoryIDPath']
+                revisedDict['EbayPrimaryCategoryName'] = item['PrimaryCategoryName']
+                revisedDict['EbaySellerUserID'] = item['Seller']['UserID']
+                revisedDict['StartTime'] = item['StartTime']
+                print(item['Storefront'])
+                revisedDict['StoreName'] = item['Storefront']['StoreName']
+                revisedDict['StoreURL'] = item['Storefront']['StoreURL']
+                revisedDict['Title'] = item['Title']
+                revisedDict['ViewItemURLForNaturalSearch'] = item['ViewItemURLForNaturalSearch']
+                centralList.append(revisedDict)
+        except Exception as e:
             print(e)
-            print(e.response.dict())
-    dumpDictJSON(centralDictionary)
+    dumpObjJSON(centralList)
 
 
 
