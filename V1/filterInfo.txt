@@ -1,0 +1,58 @@
+Filter By:
+
+"ConditionDisplayName"
+"Exterior Color"
+"Interior Color"
+"PostalCode"
+"Make"
+"Mileage"
+"Model"
+"Year"
+"value"
+
+
+
+
+
+
+Display:
+
+"Description"
+"EbaySellerUserID"
+"ExteriorColor"
+"ForSaleBy"
+"InteriorColor"
+"Location"
+"Make"
+"ManufacturerExteriorColor"
+"ManufacturerInteriorColor"
+"Mileage"
+"Model"
+"PictureURL"
+"PostalCode"
+"StartTime"
+"StoreName"
+"StoreURL"
+"Title"
+"VIN"
+"VehicleTitle"
+"ViewItemURLForNaturalSearch"
+"Warranty"
+"Year"
+"_currencyID"
+"value"
+"FuelType"
+"Options"
+"PowerOptions"
+"Engine"
+"BodyType"
+"Transmission"
+
+
+
+
+
+Notes:
+
+"PictureURL" is a [list]
+"Options" and "PowerOptions" usually they have a value of "--", if they EXIST and don't have a value of "--", display them
