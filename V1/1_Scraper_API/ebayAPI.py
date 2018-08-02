@@ -153,7 +153,7 @@ def shoppingAPI(make, JSON=True):
             for item in apiDict['Item']:
                 revisedDict = {}
                 revisedDict['ConditionDisplayName'] = item['ConditionDisplayName']
-                revisedDict['ConditionID'] = item['ConditionID']
+                revisedDict['ConditionID'] = int(item['ConditionID'])
                 revisedDict['_currencyID'] = item['ConvertedCurrentPrice']['_currencyID']
                 revisedDict['value'] = float(item['ConvertedCurrentPrice']['value'])
                 revisedDict['Description'] = item['Description']
@@ -203,7 +203,7 @@ def shoppingAPI(make, JSON=True):
                     revisedDict['PictureURL'] = item['PictureURL']
                 if 'PostalCode' in item:
                     revisedDict['PostalCode'] = item['PostalCode']
-                revisedDict['EbayPrimaryCategoryID'] = item['PrimaryCategoryID']
+                revisedDict['EbayPrimaryCategoryID'] = int(item['PrimaryCategoryID'])
                 revisedDict['EbayPrimaryCategoryIDPath'] = item['PrimaryCategoryIDPath']
                 revisedDict['EbayPrimaryCategoryName'] = item['PrimaryCategoryName']
                 revisedDict['EbaySellerUserID'] = item['Seller']['UserID']
