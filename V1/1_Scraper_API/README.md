@@ -7,11 +7,11 @@ Last Updated: 8/2/2018
 ## Table Of Contents
 -   [Objective](#objective)
 -   [Pre Installation](#preinstall)
-    - [Python Version](#pyversion)
-    - [Packages](#packages)
-- [Function Overview](#funcoverview)
-- [Variable Types](#variabletypes)
-- [Sample JSON Output](#samplejson)
+    -   [Python Version](#pyversion)
+    -   [Packages](#packages)
+-   [Function Overview](#funcoverview)
+-   [Variable Types](#variabletypes)
+-   [Sample JSON Output](#samplejson)
 
 
 <a name="objective"></a>
@@ -89,7 +89,7 @@ def shoppingAPI(make, JSON=True):
 
 
 <a name="variabletypes"></a>
-#### Variable Types in JSON output
+## Variable Types in JSON output
 
 All attributes given in Shopping API <br>
 
@@ -143,7 +143,7 @@ Transmission      | `string`     |  Transmission
 
 
 <a name="samplejson"></a>
-### Sample JSON output
+## Sample JSON output
 Parts were cut for length
 ```JSON
 [
