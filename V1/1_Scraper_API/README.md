@@ -46,45 +46,51 @@ and that should download all the necessary packages for you. Otherwise you can i
 <a name="funcoverview"></a>
 ## Function Overview in ebayAPI.py
 
+#### dumpXML
 ```python
 def dumpXML(api, filename="data.xml"):
 ```
-<b>Description:</b> <br>
+-   <b>Description:</b> <br>
 Takes api object from Ebay API request and writes contents to an XML file
 
 
+#### dumpObjJSON
 ```python
 def dumpObjJSON(obj, filename="data.json"):
 ```
-<b>Description:</b> <br>
+-   <b>Description:</b> <br>
 Takes an object like a list / dictionary and writes contents to a JSON file
 
 
+#### dumpApiJSON
 ```python
 def dumpApiJSON(api, filename="data.json"):
 ```
-<b>Description:</b> <br>
+-   <b>Description:</b> <br>
 Takes api object from Ebay API request and writes contents to a JSON file
 
 
+#### getTotalPages
 ```python
 def getTotalPages(api, make, dict=None):
 ```
-<b>Description:</b> <br>
+-   <b>Description:</b> <br>
 Helper function for `ebayItemIdList` function. Takes api object from Ebay Finding API and car make as arguments. Calculates the total number of listings for a given car make on Ebay. Then divides by the total number of listings per page and returns the total number of pages.
 
 
+#### ebayItemIdList
 ```python
 def ebayItemIdList(make, listLength=None):
 ```
-<b>Description: </b> <br>
+-   <b>Description: </b> <br>
 Helper function for `shoppingAPI` function. Takes in a car make as argument. Forms a list using the Ebay Finding API of all of the Item IDs for all the listings available for a given car make. Then returns that list of strings. For example, if you set `make='Ferrari'`, it'll return a list of the itemIDs for all listings with `make=Ferrari`
 
 
+#### shoppingAPI
 ```python
 def shoppingAPI(make, JSON=True):
 ```
-<b>Description: </b> <br>
+-   <b>Description: </b> <br>
 "Main" function. Takes in a car make as argument. Gets a list of all ebay Item ID's from `ebayItemIdList(make,listLength=None):` and uses that to make calls to Ebay's Shopping API. Ebay limits each `GetMultipleItems` API call to just 20 items, so it loops through in increments of 20 to get to the total number of listings. As it is looping, it stores relevent information in a python list object. Once it's done, it dumps the list to a JSON file using `dumpObjJSON` method.
 
 
