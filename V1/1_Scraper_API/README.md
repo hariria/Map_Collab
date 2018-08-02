@@ -85,7 +85,7 @@ Helper function for `shoppingAPI` function. Takes in a car make as argument. For
 def shoppingAPI(make, JSON=True):
 ```
 <b>Description: </b> <br>
-"Main" function. Takes in a car make as argument. Gets a list of all ebay Item ID's from `ebayItemIdList(make, listLength=None):` and uses that to make calls to Ebay's Shopping API. Ebay limits each `GetMultipleItems` API call to just 20 items, so it loops through in increments of 20 to get to the total number of listings. As it is looping, it stores relevent information in a python list object. Once it's done, it dumps the list to a JSON file using `dumpObjJSON` method.
+"Main" function. Takes in a car make as argument. Gets a list of all ebay Item ID's from `ebayItemIdList(make,listLength=None):` and uses that to make calls to Ebay's Shopping API. Ebay limits each `GetMultipleItems` API call to just 20 items, so it loops through in increments of 20 to get to the total number of listings. As it is looping, it stores relevent information in a python list object. Once it's done, it dumps the list to a JSON file using `dumpObjJSON` method.
 
 
 <a name="variabletypes"></a>
