@@ -19,20 +19,21 @@ router.get("/create", (req, res) => {
       var contents = JSON.parse(dataJSON);
       var count=0;
       var tempCars = [];
+      /*
       contents.some(function(listing) {
         count++;
         console.log("Inserting "+listing.Year+" "+listing.Make+" "+listing.Model);
         tempCars.push(listing);
         return count===25; //Stop after inserting 25 cars from the json
-      });
-      Car.collection.insert(tempCars /*contents*/, (err, docs) => {
+      }); */
+      Car.collection.insert(/*tempCars */ contents, (err, docs) => {
         if(err) console.log(err);
         else {
           Car.collection.find({}).forEach(function(car) {
             car.ConditionID = parseInt(car.ConditionID);
-            car.EbayItemID = parseInt(car.EbayItemID);
-            car.Mileage = parseInt(car.Mileage);
-            car.value = mongodb.Double(car.value);
+            car.EbayItemID = car.EbayItemID;
+            car.Mileage = car.Mileage;
+            car.value = car.value;
             Car.collection.save(car);
           });
           console.log("Added " + docs.insertedCount + " new cars to database.");
