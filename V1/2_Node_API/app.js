@@ -9,19 +9,19 @@ const mongoose = require('mongoose');
 
 const app = express();
 
-const index = require('./routes/index');
+const indexPage = require('./routes/index');
 
 app.set('views', path.join(__dirname, 'www'));
 app.set('view engine', 'ejs');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(session({ secret: 'asfhajkcbkjqw' }));
+app.use(session({ secret: 'asfhajkcbkjqw', saveUninitialized: true, resave: true }));
 app.use(flash());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(cors());
 
-app.use('/', index);
+app.use('/', indexPage);
 
 var url = 'mongodb://localhost:27017/';
 mongoose.connect(url);

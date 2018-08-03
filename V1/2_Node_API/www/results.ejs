@@ -8,15 +8,21 @@
   <% if (locals.msg) { %>
     <h3><%= msg %></h3>
   <% } %>
-  <h1>Filtered Results: </h1>
   <% if (locals.results) { %>
+    <h1>Filtered Results: </h1>
     <% if(results.length==0) { %>
       <h3>No Results Found</h3>
     <% } %>
     <% results.forEach(function(doc) { %>
-      <h3><%= doc.year %> <%= doc.make %> <%= doc.model %> - $<%= doc.price %></h3>
-      <h4><%= doc.mileage %> miles</h4>
+      <a class="carLink" href="/view/<%= doc.EbayItemID %>">
+        <h3><%= doc.Year %> <%= doc.Make %> <%= doc.Model %> - $<%= doc.value %></h3>
+        <h4><%= doc.Mileage %> miles</h4>
+      </a>
     <% }); %>
+  <% } else { %>
+    <script> window.location = "/"; </script>
   <% } %>
+  <br>
+  <a href="/">Back to home</a>
 </body>
 </html>

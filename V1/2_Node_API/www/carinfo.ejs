@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Car Map</title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+</head>
+<body>
+  <h1>Viewing Car: </h1>
+  <% if (locals.msg) { %>
+    <h3><%= msg %></h3>
+  <% } %>
+  <% var car = JSON.parse(carstring); %>
+  <h3><%= car.Year %> <%= car.Make %> <%= car.Model %> - $<%= car.value %> <%= car._currencyID %></h3>
+  <h4><%= car.Mileage %> miles</h4>
+  <h4>Exterior Color: <%= car.ExteriorColor %></h4>
+  <h4>Interior Color: <%= car.InteriorColor %></h4>
+  <h4>VIN: <%= car.VIN %></h4>
+  <% if(car.Engine) { %><h4>Engine: <%= car.Engine %></h4><% } %>
+  <% if(car.FuelType) { %><h4>Fuel Type: <%= car.FuelType %></h4><% } %>
+  <% if(car.Transmission) { %><h4>Transmission: <%= car.Transmission %></h4><% } %>
+  <h3>Images: </h3>
+  <% car.PictureURL.forEach((url) => {  %>
+    <img src="<%= url %>" />
+  <% }); %>
+  <br>
+  <h4>eBay Seller: <%= car.EbaySellerUserID %></h4>
+  <h4>Location: <%= car.Location %></h4>
+  <h4>Postal Code: <%= car.PostalCode %></h4>
+  <a href="<%= car.ViewItemURLForNaturalSearch %>"><h4>View on eBay</h4></a>
+  <br>
+  <a href="/filter">Return to search results</a><br><br>
+  <a href="/">Create new search</a>
+</body>
+</html>
