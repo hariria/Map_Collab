@@ -12,6 +12,7 @@ import sys
 import json
 import yaml
 import math
+import argparse
 from optparse import OptionParser
 import lxml.etree as etree
 from xml.etree import ElementTree as ET
@@ -25,6 +26,27 @@ from ebaysdk.shopping import Connection as Shopping
 from ebaysdk.exception import ConnectionError
 from halo import Halo
 
+
+# ----- GETS APP ID FROM CONFIG ------ #
+def getAppID(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return (str(temp['open.api.ebay.com']['appid'])).strip()
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
+
+
+# ------ GET MAKES LIST FROM CONFIG ----- #
+def getMakes(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return temp['make']
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
 
 
 # ------ DUMP XML TO A FILE ------- #
@@ -127,7 +149,7 @@ def ebayItemIdList(make, listLength=None):
 
 
 # ------- SHOPPING ------- #
-def shoppingAPI(make, JSON=True):
+def shoppingAPI(make, appid, JSON=True, db=False):
     centralList = []
     api = Shopping(appid='AndrewHa-carmap-PRD-a69dbd521-35d96473', config_file='ebay.yaml',
                    warnings=True)
@@ -228,14 +250,33 @@ def shoppingAPI(make, JSON=True):
             print('\n\n\n')
     if JSON == True:
         spinner.start("dumping JSON")
-        dumpObjJSON(centralList)
+        dumpObjJSON(centralList, make + '.json')
         spinner.succeed("Process complete, JSON dumped")
+    if db == True:
+        spinner.start("dumping to database")
+        spinner.succeed("Process complete, data dumped to mongo")
 
 
+
+#---- main ----#
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--make", "-m", nargs="*", help="add the keyword(s) you're looking for")
+    parser.add_argument("--json", "-j", nargs="*", help="produces JSON object")
+    parser.add_argument("--config", "-cf", help="add your config file here")
+    args = parser.parse_args()
+
+    if args.config==None:
+        print("Please enter a config file by doing --config <config.yaml>")
+        return
+    else:
+        appid = getAppID(args.config)
+        makes = getMakes(args.config)
+        for make in makes:
+            shoppingAPI(make, appid)
 
 
 
 # ---- MAIN ---- #
 if __name__ == "__main__":
-
-    shoppingAPI('Ferrari')
+    main()
