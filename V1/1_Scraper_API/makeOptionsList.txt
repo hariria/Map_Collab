@@ -1,0 +1,92 @@
+trdrp
+AMC
+Acura
+Alfa Romeo
+Ariel
+Aston Martin
+Audi
+Austin
+Austin Healey
+BMW
+Bentley
+Bugatti
+Buick
+Cadillac
+Chevrolet
+Chrysler
+Citroën
+Cord
+Daewoo
+Daihatsu
+Datsun
+De Tomaso
+DeLorean
+DeSoto
+Dodge
+Eagle
+Edsel
+Ferrari
+Fiat
+Fisker
+Ford
+GMC
+Genesis
+Geo
+Honda
+Hudson
+Hummer
+Hyundai
+Infiniti
+International Harvester
+Isuzu
+Jaguar
+Jeep
+Kia
+Koenigsegg
+Lamborghini
+Lancia
+Land Rover
+Lexus
+Lincoln
+Lotus
+MG
+Maserati
+Maybach
+Mazda
+McLaren
+Mercedes-Benz
+Mercury
+Mini
+Mitsubishi
+Morgan
+Morris
+Nash
+Nissan
+Oldsmobile
+Opel
+Packard
+Peugeot
+Plymouth
+Pontiac
+Porsche
+Ram
+Renault
+Rolls-Royce
+Saab
+Saturn
+Scion
+Shelby
+Skoda
+Smart
+Studebaker
+Subaru
+Sunbeam
+Suzuki
+Tesla
+Toyota
+Triumph
+Volkswagen
+Volvo
+Willys
+Replica/Kit Makes
+Other Makes

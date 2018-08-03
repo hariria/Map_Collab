@@ -57,6 +57,8 @@ def dumpApiJSON(api, filename="data.json"):
 
 # ------ TOTAL NUMBER OF PAGES ------- #
 def getTotalPages(api, make, dict=None):
+    spinner = Halo(text='getting total pages 📜', spinner='boxBounce')
+    spinner.start()
     dictFinding = ({
         'categoryId': '6001',
         'aspectFilter': {
@@ -75,6 +77,7 @@ def getTotalPages(api, make, dict=None):
         response = json.loads('%s' % api.execute('findItemsAdvanced', dictFinding).json())
         totalEntries = float(response['paginationOutput']['totalEntries'])
         totalPages = int(math.ceil(totalEntries / 100))
+        spinner.succeed('successfully retrieved number of pages')
         return totalPages
 
     except Exception as e:
@@ -103,6 +106,8 @@ def ebayItemIdList(make, listLength=None):
     try:
         listItemId = []
         totalPages = getTotalPages(api, make)
+        spinner = Halo(text='grabbing list of Item IDs', spinner='monkey')
+        spinner.start()
         for x in range(1, totalPages + 1):
             dictFinding['paginationInput']['pageNumber'] = str(x)
             response = json.loads('%s' % api.execute('findItemsAdvanced', dictFinding).json())
@@ -110,12 +115,13 @@ def ebayItemIdList(make, listLength=None):
                 listItemId.append(listing['itemId'])
         print("TOTAL NUMBER OF LISTINGS FOR %s: " % make, len(listItemId))
         if listLength != None:
-            print("Returning %s number of items" % listLength)
+            spinner.succeed("Returning %s number of Item Ids" % listLength)
             return listItemId[0:listLength]
+        spinner.succeed("Returning all Item Ids")
         return listItemId
 
     except Exception as e:
-        print("error % s" % e)
+        spinner.fail("ERROR: %s" % e)
 
 
 
@@ -126,36 +132,41 @@ def shoppingAPI(make, JSON=True):
     api = Shopping(appid='AndrewHa-carmap-PRD-a69dbd521-35d96473', config_file='ebay.yaml',
                    warnings=True)
     listItemId = ebayItemIdList(make)
+    spinner = Halo(text='creating dictionary...', spinner='flip')
+    spinner.start()
+    spinner.stop()
     shoppingDict = ({
         'ItemID': listItemId,
         'IncludeSelector': 'ItemSpecifics,TextDescription,Details'
     })
-
     for x in range(0, len(listItemId), 20):
+
         if (x < len(listItemId)):
+            spinner.start('├── grabbing listings [%s:%s]' % (str(x), str(x+20)))
             shoppingDict['ItemID'] = listItemId[x: x + 20]
         else:
             maxRange = len(listItemId) - x
+            spinner.start('└── grabbing listings [%s:%s]' % (str(x), str(maxRange)))
             shoppingDict['ItemID'] = listItemId[x: x + maxRange]
         try:
             apiDict = json.loads('%s' % api.execute('GetMultipleItems', shoppingDict).json())
             for item in apiDict['Item']:
                 revisedDict = {}
                 revisedDict['ConditionDisplayName'] = item['ConditionDisplayName']
-                revisedDict['ConditionID'] = item['ConditionID']
-                revisedDict['_currencyID'] = item['CurrentPrice']['_currencyID']
-                revisedDict['value'] = item['ConvertedCurrentPrice']['value']
+                revisedDict['ConditionID'] = int(item['ConditionID'])
+                revisedDict['_currencyID'] = item['ConvertedCurrentPrice']['_currencyID']
+                revisedDict['value'] = float(item['ConvertedCurrentPrice']['value'])
                 revisedDict['Description'] = item['Description']
-                revisedDict['EbayItemID'] = item['ItemID']
+                revisedDict['EbayItemID'] = int(item['ItemID'])
                 for attribute in item['ItemSpecifics']['NameValueList']:
                     if attribute['Name'] == 'Year':
-                        revisedDict['Year'] = attribute['Value']
+                        revisedDict['Year'] = int(attribute['Value'])
                     elif attribute['Name'] == 'Make':
                         revisedDict['Make'] = attribute['Value']
                     elif attribute['Name'] == 'Model':
                         revisedDict['Model'] = attribute['Value']
                     elif attribute['Name'] == 'Mileage':
-                        revisedDict['Mileage'] = attribute['Value']
+                        revisedDict['Mileage'] = int(attribute['Value'])
                     elif attribute['Name'] == 'Exterior Color':
                         revisedDict['ExteriorColor'] = attribute['Value']
                     elif attribute['Name'] == 'Interior Color':
@@ -192,7 +203,7 @@ def shoppingAPI(make, JSON=True):
                     revisedDict['PictureURL'] = item['PictureURL']
                 if 'PostalCode' in item:
                     revisedDict['PostalCode'] = item['PostalCode']
-                revisedDict['EbayPrimaryCategoryID'] = item['PrimaryCategoryID']
+                revisedDict['EbayPrimaryCategoryID'] = int(item['PrimaryCategoryID'])
                 revisedDict['EbayPrimaryCategoryIDPath'] = item['PrimaryCategoryIDPath']
                 revisedDict['EbayPrimaryCategoryName'] = item['PrimaryCategoryName']
                 revisedDict['EbaySellerUserID'] = item['Seller']['UserID']
@@ -203,14 +214,22 @@ def shoppingAPI(make, JSON=True):
                 revisedDict['Title'] = item['Title']
                 revisedDict['ViewItemURLForNaturalSearch'] = item['ViewItemURLForNaturalSearch']
                 centralList.append(revisedDict)
+            if (x < len(listItemId)):
+                spinner.succeed('├── grabbed listings [%s:%s]' % (str(x), str(x+20)))
+            else:
+                maxRange = len(listItemId) - x
+                spinner.succeed('└── grabbed listings [%s:%s]' % (str(x), str(x+20)))
         except Exception as e:
+            spinner.fail(e)
             pp = pprint.PrettyPrinter(indent=4)
             print("LIST INDEX: [", x, ",", x+20, "]")
             print("CURRENT DICTIONARY:\n", pp.pprint(apiDict))
             print(e)
             print('\n\n\n')
     if JSON == True:
+        spinner.start("dumping JSON")
         dumpObjJSON(centralList)
+        spinner.succeed("Process complete, JSON dumped")
 
 
 
