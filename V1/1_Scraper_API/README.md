@@ -9,6 +9,9 @@ Last Updated: 8/2/2018
 -   [Pre Installation](#preinstall)
     -   [Python Version](#pyversion)
     -   [Packages](#packages)
+- [Usage](#usage)
+    - [Config File](#config)
+    - [Command Line Interface](#cli)
 -   [Function Overview](#funcoverview)
 -   [Variable Types](#variabletypes)
 -   [Sample JSON Output](#samplejson)
@@ -40,6 +43,64 @@ and that should download all the necessary packages for you. Otherwise you can i
 `$ pip3 install lxml` <br>
 `$ pip3 install ebaysdk` <br>
 `$ pip3 install PyYAML` <br>
+
+
+
+<a name="usage"></a>
+## Usage
+<a name="config"></a>
+#### Config File
+Your config file should have a few key components.
+1. `svcs.ebay.com`
+    1. This is the necessary for Ebay's Finding API
+2. `open.api.ebay.com`
+    1. This is necessary for Ebay's Shopping API
+    2. In order for it to work you need at least your appid
+3. list of makes
+    1. grabs the listings of every single car make that is in the list. Make sure that you spell the make of the car correctly.
+
+
+
+
+```yaml
+name: ebay_api_config
+
+# Finding API - https://www.x.com/developers/ebay/products/finding-api
+svcs.ebay.com:
+    appid: AndrewHa-carmap-PRD-a69dbd521-35d96473
+    version: 1.0.0
+
+# Shopping API - https://www.x.com/developers/ebay/products/shopping-api
+open.api.ebay.com:
+    appid: AndrewHa-carmap-PRD-a69dbd521-35d96473
+    version: 671
+
+# What Makes you would like to search for
+make:
+    - Ferrari
+    - Lamborghini
+
+JSON: True
+Mongo: False
+```
+
+
+
+<a name="cli"></a>
+#### Command line interface
+To run the script, you need to have your config file in the same directory
+in addition to `common.py`. Your directory should look something like:
+```
+folder
+    ├── ebayAPI.py
+    ├── config.yaml
+    └── common.py
+```
+then to run the program do:
+```
+$ python ebayAPI.py -cf config.yaml
+```
+
 
 
 
