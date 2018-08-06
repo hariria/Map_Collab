@@ -107,6 +107,47 @@ $ python ebayAPI.py -cf config.yaml
 <a name="funcoverview"></a>
 ## Function Overview in ebayAPI.py
 
+
+#### getAppID
+```python
+def getAppID(config):
+```
+-   <b>Description:</b> <br>
+Gets the App ID supplied in the yaml config file
+
+
+#### getMakes
+```python
+def getMakes(config):
+```
+-   <b>Description:</b> <br>
+Gets the list of makes supplied in the yaml config file
+
+
+#### getMakes
+```python
+def getJSONBool(config):
+```
+-   <b>Description:</b> <br>
+Gets the boolean argument for JSON in the yaml config file
+
+
+#### getMongoBool
+```python
+def getMongoBool(config):
+```
+-   <b>Description:</b> <br>
+Gets the boolean argument for Mongo in the yaml config file
+
+
+#### getMongoBool
+```python
+def dumpMongo(obj, url=None, dbName='motors', collectionName='cars', host='localhost', port=27017):
+```
+-   <b>Description:</b> <br>
+Dumps the response from the database into mongodb. By default it dumps into database: 'motors', collection: 'cars', host: 'localhost', and port: 27017
+
+
 #### dumpXML
 ```python
 def dumpXML(api, filename="data.xml"):

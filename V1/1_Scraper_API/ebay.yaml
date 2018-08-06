@@ -14,6 +14,7 @@ open.api.ebay.com:
 make:
     - Bugatti
 
+# Download JSON format
 JSON: True
 
 # Will download to 'localhost' and port 27017 by default

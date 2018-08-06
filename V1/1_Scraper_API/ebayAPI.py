@@ -48,6 +48,8 @@ def getMakes(config):
             print("ERROR: ", e)
             return ''
 
+
+# ------ GET THE BOOLEAN SUPPLIED BY CONFIG FOR JSON ------ #
 def getJSONBool(config):
     with open(config, 'r') as file:
         try:
@@ -58,6 +60,7 @@ def getJSONBool(config):
             return ''
 
 
+# ------ GET THE BOOLEAN SUPPLIED BY CONFIG FOR MONGO ------ #
 def getMongoBool(config):
     with open(config, 'r') as file:
         try:
