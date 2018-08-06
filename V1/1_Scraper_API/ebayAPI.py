@@ -48,6 +48,38 @@ def getMakes(config):
             print("ERROR: ", e)
             return ''
 
+def getJSONBool(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return temp['JSON']
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
+
+
+def getMongoBool(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return temp['mongo']
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
+
+
+
+# ------ dump to mongo DB ------ #
+def dumpMongo(obj, url=None, dbName='motors', collectionName='cars', host='localhost', port=27017):
+    try:
+        client = MongoClient(host, port)
+        db = client[dbName]
+        collection = db[collectionName]
+        collection.insert(obj)
+    except Exception as e:
+        print(e)
+
+
 
 # ------ DUMP XML TO A FILE ------- #
 def dumpXML(api, filename="data.xml"):
@@ -135,7 +167,7 @@ def ebayItemIdList(make, listLength=None):
             response = json.loads('%s' % api.execute('findItemsAdvanced', dictFinding).json())
             for listing in response['searchResult']['item']:
                 listItemId.append(listing['itemId'])
-        print("TOTAL NUMBER OF LISTINGS FOR %s: " % make, len(listItemId))
+        print("\nTOTAL NUMBER OF LISTINGS FOR %s: " % make, len(listItemId))
         if listLength != None:
             spinner.succeed("Returning %s number of Item Ids" % listLength)
             return listItemId[0:listLength]
@@ -149,8 +181,8 @@ def ebayItemIdList(make, listLength=None):
 
 
 # ------- SHOPPING ------- #
-def shoppingAPI(make, appid, JSON=True, db=False):
-    centralList = []
+def shoppingAPI(make, appid, JSON=False, db=False):
+    centralList = {make: []}
     api = Shopping(appid='AndrewHa-carmap-PRD-a69dbd521-35d96473', config_file='ebay.yaml',
                    warnings=True)
     listItemId = ebayItemIdList(make)
@@ -235,7 +267,7 @@ def shoppingAPI(make, appid, JSON=True, db=False):
                     revisedDict['StoreURL'] = item['Storefront']['StoreURL']
                 revisedDict['Title'] = item['Title']
                 revisedDict['ViewItemURLForNaturalSearch'] = item['ViewItemURLForNaturalSearch']
-                centralList.append(revisedDict)
+                centralList[make].append(revisedDict)
             if (x < len(listItemId)):
                 spinner.succeed('├── grabbed listings [%s:%s]' % (str(x), str(x+20)))
             else:
@@ -254,6 +286,7 @@ def shoppingAPI(make, appid, JSON=True, db=False):
         spinner.succeed("Process complete, JSON dumped")
     if db == True:
         spinner.start("dumping to database")
+        dumpMongo(centralList)
         spinner.succeed("Process complete, data dumped to mongo")
 
 
@@ -262,7 +295,7 @@ def shoppingAPI(make, appid, JSON=True, db=False):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--make", "-m", nargs="*", help="add the keyword(s) you're looking for")
-    parser.add_argument("--json", "-j", nargs="*", help="produces JSON object")
+    parser.add_argument("--json", "-j", nargs="*",  help="produces JSON object")
     parser.add_argument("--config", "-cf", help="add your config file here")
     args = parser.parse_args()
 
@@ -272,8 +305,10 @@ def main():
     else:
         appid = getAppID(args.config)
         makes = getMakes(args.config)
+        JSON = getJSONBool(args.config)
+        mongo = getMongoBool(args.config)
         for make in makes:
-            shoppingAPI(make, appid)
+            shoppingAPI(make, appid, json, mongo)
 
 
 
