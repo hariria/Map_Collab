@@ -311,7 +311,7 @@ def main():
         JSON = getJSONBool(args.config)
         mongo = getMongoBool(args.config)
         for make in makes:
-            shoppingAPI(make, appid, json, mongo)
+            shoppingAPI(make, appid, JSON, mongo)
 
 
 
