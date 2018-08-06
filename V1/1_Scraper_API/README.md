@@ -77,11 +77,13 @@ open.api.ebay.com:
 
 # What Makes you would like to search for
 make:
-    - Ferrari
-    - Lamborghini
+    - Bugatti
 
+# Download JSON format
 JSON: True
-Mongo: False
+
+# Will download to 'localhost' and port 27017 by default
+mongo: True
 ```
 
 
