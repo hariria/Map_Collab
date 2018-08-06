@@ -12,6 +12,7 @@ import sys
 import json
 import yaml
 import math
+import argparse
 from optparse import OptionParser
 import lxml.etree as etree
 from xml.etree import ElementTree as ET
@@ -24,6 +25,62 @@ from ebaysdk.finding import Connection as finding
 from ebaysdk.shopping import Connection as Shopping
 from ebaysdk.exception import ConnectionError
 from halo import Halo
+
+
+# ----- GETS APP ID FROM CONFIG ------ #
+def getAppID(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return (str(temp['open.api.ebay.com']['appid'])).strip()
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
+
+
+# ------ GET MAKES LIST FROM CONFIG ----- #
+def getMakes(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return temp['make']
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
+
+
+# ------ GET THE BOOLEAN SUPPLIED BY CONFIG FOR JSON ------ #
+def getJSONBool(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return temp['JSON']
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
+
+
+# ------ GET THE BOOLEAN SUPPLIED BY CONFIG FOR MONGO ------ #
+def getMongoBool(config):
+    with open(config, 'r') as file:
+        try:
+            temp = yaml.load(file)
+            return temp['mongo']
+        except Exception as e:
+            print("ERROR: ", e)
+            return ''
+
+
+
+# ------ dump to mongo DB ------ #
+def dumpMongo(obj, url=None, dbName='motors', collectionName='cars', host='localhost', port=27017):
+    try:
+        client = MongoClient(host, port)
+        db = client[dbName]
+        collection = db[collectionName]
+        collection.insert(obj)
+    except Exception as e:
+        print(e)
 
 
 
@@ -113,7 +170,7 @@ def ebayItemIdList(make, listLength=None):
             response = json.loads('%s' % api.execute('findItemsAdvanced', dictFinding).json())
             for listing in response['searchResult']['item']:
                 listItemId.append(listing['itemId'])
-        print("TOTAL NUMBER OF LISTINGS FOR %s: " % make, len(listItemId))
+        print("\nTOTAL NUMBER OF LISTINGS FOR %s: " % make, len(listItemId))
         if listLength != None:
             spinner.succeed("Returning %s number of Item Ids" % listLength)
             return listItemId[0:listLength]
@@ -127,8 +184,8 @@ def ebayItemIdList(make, listLength=None):
 
 
 # ------- SHOPPING ------- #
-def shoppingAPI(make, JSON=True):
-    centralList = []
+def shoppingAPI(make, appid, JSON=False, db=False):
+    centralList = {make: []}
     api = Shopping(appid='AndrewHa-carmap-PRD-a69dbd521-35d96473', config_file='ebay.yaml',
                    warnings=True)
     listItemId = ebayItemIdList(make)
@@ -213,7 +270,7 @@ def shoppingAPI(make, JSON=True):
                     revisedDict['StoreURL'] = item['Storefront']['StoreURL']
                 revisedDict['Title'] = item['Title']
                 revisedDict['ViewItemURLForNaturalSearch'] = item['ViewItemURLForNaturalSearch']
-                centralList.append(revisedDict)
+                centralList[make].append(revisedDict)
             if (x < len(listItemId)):
                 spinner.succeed('├── grabbed listings [%s:%s]' % (str(x), str(x+20)))
             else:
@@ -228,14 +285,36 @@ def shoppingAPI(make, JSON=True):
             print('\n\n\n')
     if JSON == True:
         spinner.start("dumping JSON")
-        dumpObjJSON(centralList)
+        dumpObjJSON(centralList, make + '.json')
         spinner.succeed("Process complete, JSON dumped")
+    if db == True:
+        spinner.start("dumping to database")
+        dumpMongo(centralList)
+        spinner.succeed("Process complete, data dumped to mongo")
 
 
+
+#---- main ----#
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--make", "-m", nargs="*", help="add the keyword(s) you're looking for")
+    parser.add_argument("--json", "-j", nargs="*",  help="produces JSON object")
+    parser.add_argument("--config", "-cf", help="add your config file here")
+    args = parser.parse_args()
+
+    if args.config==None:
+        print("Please enter a config file by doing --config <config.yaml>")
+        return
+    else:
+        appid = getAppID(args.config)
+        makes = getMakes(args.config)
+        JSON = getJSONBool(args.config)
+        mongo = getMongoBool(args.config)
+        for make in makes:
+            shoppingAPI(make, appid, JSON, mongo)
 
 
 
 # ---- MAIN ---- #
 if __name__ == "__main__":
-
-    shoppingAPI('Ferrari')
+    main()
